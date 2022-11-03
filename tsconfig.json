@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "outDir": "dist/",
+        "target": "esnext",
+        "module": "commonjs"
+    },
+    "files": ["src/main.ts"]
+}
