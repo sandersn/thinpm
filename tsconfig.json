@@ -4,7 +4,10 @@
         "outDir": "dist/",
         "lib": ["esnext"],
         "target": "esnext",
-        "module": "commonjs"
+        "module": "esnext"
+    },
+    "ts-node": {
+        "swc": true
     },
     "files": ["src/main.ts"]
 }
