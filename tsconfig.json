@@ -4,7 +4,9 @@
         "outDir": "dist/",
         "lib": ["esnext"],
         "target": "esnext",
-        "module": "esnext"
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "node"
     },
     "ts-node": {
         "swc": true
