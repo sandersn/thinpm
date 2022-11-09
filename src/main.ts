@@ -42,18 +42,12 @@ function downloadNpmPackage(name: string, version: string, outDir: string): void
     const fullName = `${name}@${version}`;
     const typesName = `@types/${npmToDTName(name)}@${version}`;
     sh.cd('downloads')
-    try {
-        sh.exec(`npm install ${fullName} --no-package-lock --ignore-scripts`)
-    }
-    catch (e) {
-        console.log('package', name, 'not found\n', e)
+    if (0 !== sh.exec(`npm install ${fullName} --no-package-lock --ignore-scripts`, { silent: true }).code) {
+        console.log('package', name, 'not found')
         sh.cd('..')
         return // If the package doesn't exist, don't bother with types
     }
-    try {
-        sh.exec(`npm install ${typesName} --no-package-lock --ignore-scripts`)
-    }
-    catch (e) {
+    if (0 !== sh.exec(`npm install ${typesName} --no-package-lock --ignore-scripts`, { silent: true }).code) {
         console.log('no @types package for', name)
     }
     sh.cd('..')
