@@ -1,6 +1,7 @@
-import * as cp from 'child_process'
 import * as fs from 'fs'
 import { join, extname } from 'path'
+import sh from 'shelljs'
+
 const names = process.argv.slice(2)
 type Text = string
 type Path = string
@@ -17,9 +18,10 @@ const format: Format = {
     packages: {},
 }
 if (!fs.existsSync('downloads')) fs.mkdirSync('downloads')
+if (!fs.existsSync('downloads/package.json')) fs.writeFileSync('downloads/package.json', '{}')
 for (const name of names) {
     console.log('******** npm install', name, "**********************")
-    downloadNpmPackage(name, 'latest', 'downloads/')
+    downloadNpmPackage(name, 'latest', 'downloads')
 }
 const packagedFiles = saveTsFiles('downloads/node_modules')
 for (const name of names) {
@@ -39,25 +41,22 @@ function npmToDTName(baseName: string) {
 function downloadNpmPackage(name: string, version: string, outDir: string): void {
     const fullName = `${name}@${version}`;
     const typesName = `@types/${npmToDTName(name)}@${version}`;
-    const cpOpts: cp.ExecFileSyncOptionsWithStringEncoding = {
-        cwd: outDir,
-        encoding: "utf8",
-        maxBuffer: 100 * 1024 * 1024,
-        stdio: 'ignore'
-    } as const;
+    sh.cd('downloads')
     try {
-        cp.execFileSync("npm", ["install", fullName, "--no-package-lock", "--ignore-scripts"], cpOpts);
+        sh.exec(`npm install ${fullName} --no-package-lock --ignore-scripts`)
     }
     catch (e) {
         console.log('package', name, 'not found\n', e)
+        sh.cd('..')
         return // If the package doesn't exist, don't bother with types
     }
     try {
-        cp.execFileSync("npm", ["install", typesName, "--no-package-lock", "--ignore-scripts"], cpOpts);
+        sh.exec(`npm install ${typesName} --no-package-lock --ignore-scripts`)
     }
     catch (e) {
         console.log('no @types package for', name)
     }
+    sh.cd('..')
 }
 
 function saveTsFiles(root: string): PackagedFiles {
