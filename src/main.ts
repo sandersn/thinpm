@@ -16,7 +16,7 @@ const format: Format = {
     files: {},
     packages: {},
 }
-fs.mkdirSync('downloads')
+if (!fs.existsSync('downloads')) fs.mkdirSync('downloads')
 for (const name of names) {
     console.log('******** npm install', name, "**********************")
     downloadNpmPackage(name, 'latest', 'downloads/')
